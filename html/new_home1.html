@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html >
+  <head>
+
+    <meta charset="UTF-8">
+    <title>GQ Messenger</title>
+    
+    
+    
+    
+        <link rel="stylesheet" href="assets/css/style.css">
+		<!--<link href="assets/css/bootstrap.css" rel="stylesheet" />-->
+
+    
+  
+  </head>
+<div id="page1">
+  <body>
+   
+    <div id="clouds">
+	<div class="cloud x1"></div>
+	<!-- Time for multiple clouds to dance around -->
+	<div class="cloud x2"></div>
+	<div class="cloud x3"></div>
+	<div class="cloud x4"></div>
+	<div class="cloud x5"></div>
+
+</div>
+
+ <div class="container">
+
+
+    <font color="blue" size="6"> <center> GQ Messenger </center> </font>
+    <br>
+      <div id="login">
+
+        <form method="post">
+
+          <fieldset class="clearfix">
+
+            <p><span class="fontawesome-user"></span><input type="text" value="Username" id="username"onBlur="if(this.value == '') this.value = 'Username'" onFocus="if(this.value == 'Username') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Username" -->
+            <!-- <p><span class="fontawesome-lock"></span><input type="password"  value="Password" onBlur="if(this.value == '') this.value = 'Password'" onFocus="if(this.value == 'Password') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" --> 
+            <p><input type="button" value="Sign In" onclick="validation()"></p>
+
+          </fieldset>
+
+        </form>
+
+        <!-- <p>Not a member? <a href="#" class="blue">Sign up now</a><span class="fontawesome-arrow-right"></span></p> -->
+
+      </div> <!-- end login -->
+
+    </div>
+    <div class="bottom"> </div>
+    
+    
+    
+    
+    
+  </body>
+  
+  </div>
+  
+  <div id="page2">
+  
+  <body style="font-family:Verdana">
+  <div class="container">
+<div class="row " style="padding-top:40px;">
+    <h3 class="text-center" >GQ Messenger </h3>
+    <br /><br />
+    <div class="col-md-8">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                RECENT CHAT HISTORY
+            </div>
+            <div class="panel-body" style="height:445px; overflow:auto;">
+<ul class="media-list" id="msg_box">
+                             
+ </ul>
+            </div>
+            <div class="panel-footer">
+                <div class="input-group">
+                                    <input type="text" class="form-control" id="msg"placeholder="Enter Message" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" type="button" onclick="chat()">SEND</button>
+                                        <!-- <input type="button" value="Send" onclick="chat()"> -->
+                                    </span>
+                                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+               ONLINE USERS
+            </div>
+            <div class="panel-body" style="height: 496px;overflow: auto;">
+                <ul class="media-list" id="users">
+
+                                    
+                </ul>
+                </div>
+            </div>
+        
+    </div>
+</div>
+</div>
+  
+</div>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$( document ).ready(function() {
+    $("#page2").hide();
+    var net = require('net');
+ flag = 0;
+ client = net.connect(4568,'192.168.8.115');   //Connect the client to server listening @port 4568
+
+});
+
+
+function validation()
+{
+
+    var name = document.getElementById("username").value;
+    // alert(window.client);
+    window.client.write(name);
+
+    client.on('data',status);
+
+    function status(chunk)
+    {
+      if(window.flag==0)
+	  {
+		window.flag = 1;
+        reDirect(chunk);
+		}
+	else if(window.flag ==1)
+	  {
+      alert(chunk);
+      if(chunk == "ok"){
+		window.flag = 2;
+  }else{
+
+		dispalyUser(chunk);
+  }
+        }
+		else
+			chat1(chunk);
+    }
+
+    function reDirect(chunk)
+    {
+          alert(chunk);
+          if(chunk == "Sucessfully added to chat room\n")
+          {
+                
+                window.flag =1;
+
+                document.getElementsByTagName('link')[0].disabled = true;
+                $("<link/>", {
+                       rel: "stylesheet",
+                       type: "text/css",
+                       href: "assets/css/bootstrap.css"
+                    }).appendTo("head");
+
+
+                $("#page1").hide();
+                $("#page2").show();
+				window.client.write("Redirected");
+                //window.open("./index.html");
+          }
+          else
+            alert("Failed");
+    }
+
+    function chat1(chunk)
+    {
+        
+        //$("#msg1").val(chunk);
+        var msg11='<li class="media">'+ chunk + '</li>';
+        $("#msg_box").append(msg11);
+    }     
+}
+    function chat()
+    {
+      
+     window.client.write(document.getElementById("msg").value);
+      // alert(document.getElementById("msg").value);
+      // return false;
+      document.getElementById("msg").value = "";
+     // client.on('data',chat1);
+      
+    }
+	
+	function dispalyUser(chunk)
+	{
+		var userlist = '<li class="media">'+ chunk + '</li>';
+		$("#users").append(userlist);
+	}
+
+
+    
+
+</script>
